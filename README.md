@@ -1,5 +1,5 @@
 ## opinionway-webhook
-This is the webhook of Omi-Polymarketer | The Opinion Trailblazer (Mass Prediction Gamification and Rewards). Get more :
+This is the webhook of Omi-Polymarketer | The Opinion Trailblazer (Mass Prediction Gamification and Rewards). Get to know more here under :
 
 # Omi-Polymarketer |  The Opinion Trailblazer (Mass Prediction Gamification and Rewards)
 ![Meet Omi, the world’s leading open-source AI wearable that revolutionizes how you capture and manage conversations.](https://www.omi.me/cdn/shop/files/gempages_515188559477474548-079c5aaa-946a-45a7-8c0c-41ee0280245d.png?v=3025922251617746303)
