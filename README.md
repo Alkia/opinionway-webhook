@@ -1,9 +1,11 @@
-# opinionway-webhook
-Omi-Polymarketer | The Opinion Trailblazer (Mass Prediction Gamification and Rewards)
+## opinionway-webhook
+This is the webhook of Omi-Polymarketer | The Opinion Trailblazer (Mass Prediction Gamification and Rewards). Get more :
 
 # Omi-Polymarketer |  The Opinion Trailblazer (Mass Prediction Gamification and Rewards)
 ![Meet Omi, the world’s leading open-source AI wearable that revolutionizes how you capture and manage conversations.](https://www.omi.me/cdn/shop/files/gempages_515188559477474548-079c5aaa-946a-45a7-8c0c-41ee0280245d.png?v=3025922251617746303)
-"Opinion Trailblazer" allow user's expressed sentiment & opinion on any topic of interest to be valued on the-fly and receive rewards based on passive unformal polls participation and correctness of their associated predictions. The platform uses **Omi**, a system that grabs transcripts of users’ opinions, analyzes them, and engage in predictions or bets about the outcome of those opinions, rewarding users for their participation and accuracy.
+"Opinion Trailblazer"
+
+This projet allows user's expressed sentiment & opinion on any topic of interest to be valued on the-fly and receive rewards based on passive unformal polls participation and correctness of their associated predictions. The platform uses **Omi**, a system that grabs transcripts of users’ opinions, analyzes them, and engage in predictions or bets about the outcome of those opinions, rewarding users for their participation and accuracy.
 
 The **Polymarket Trailblazer** concept module extends the platform by incorporating an actual **market** where users got suggested to "bet" on topics, using their opinions to make predictions and earn rewards based on the accuracy of their bets.
 
