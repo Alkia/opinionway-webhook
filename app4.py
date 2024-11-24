@@ -4,12 +4,32 @@ import logging
 from typing import List, Dict
 from spacy.lang.en.stop_words import STOP_WORDS
 import string
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+from sumy.nlp.stemmers import Stemmer
+from sumy.utils import get_stop_words
+import nltk
 
 # Initialize SpaCy model for text processing
 nlp = spacy.load("en_core_web_sm")
 
 # Configure logging to write into ./log/app.log
 logging.basicConfig(filename='./log/app.log', level=logging.INFO, format='%(message)s')
+
+# Download required NLTK data (one-time operation)
+try:
+    nltk.download('punkt', quiet=True)
+except Exception as e:
+    logging.error(f"Failed to download NLTK data: {str(e)}")
+
+# Initialize summarizer globally
+try:
+    summarizer = LsaSummarizer(Stemmer('english'))
+    summarizer.stop_words = get_stop_words('english')
+except Exception as e:
+    logging.error(f"Failed to initialize summarizer: {str(e)}")
+    summarizer = None
 
 def clean_data(data: dict) -> dict:
     """
@@ -26,7 +46,7 @@ def clean_data(data: dict) -> dict:
     elif isinstance(data, list):
         return [clean_data(item) for item in data]
     
-    # If data is 'null', replace it with None (this is done implicitly as there's no 'null' type in Python)
+    # If data is 'null', replace it with None
     elif data is None:
         return None
     
@@ -58,24 +78,45 @@ def summarize_theme(theme_description: str, max_words: int = 5) -> str:
     :param max_words: The maximum number of words to keep.
     :return: A summarized version of the theme description.
     """
-    # Tokenize and return the first `max_words` from the description
     words = theme_description.split()
     return " ".join(words[:max_words])
 
 def summarize_opinion_with_llm(opinion: str) -> str:
     """
-    Summarizes the opinion using a Large Language Model (LLM).
+    Summarizes the opinion using LSA (Latent Semantic Analysis) algorithm.
     
     :param opinion: The full opinion to be summarized.
-    :return: A clever, accurate summary of the opinion in 5 words.
+    :return: A clever, accurate summary of the opinion in about 5 words.
     """
-    # Here, instead of just shortening it, we assume an LLM is used to summarize it effectively
-    # You'd call your LLM API or model here.
+    if not opinion.strip():
+        return ""
     
-    # Placeholder for LLM summarization
-    # For demonstration, we just take the first 5 words.
-    words = opinion.split()
-    return " ".join(words[:3])
+    if not summarizer:
+        # Fallback to basic summarization if initialization failed
+        words = opinion.split()
+        return " ".join(words[:5])
+    
+    try:
+        # Parse the text
+        parser = PlaintextParser.from_string(opinion, Tokenizer('english'))
+        
+        # Generate summary (get one sentence)
+        summary = summarizer(parser.document, sentences_count=1)
+        
+        if not summary:
+            return " ".join(opinion.split()[:5])
+            
+        # Convert summary to string and get first 5 words
+        summary_text = str(summary[0])
+        words = summary_text.split()
+        
+        return " ".join(words[:5])
+        
+    except Exception as e:
+        logging.error(f"Summarization failed: {str(e)}")
+        # Fallback to basic summarization
+        words = opinion.split()
+        return " ".join(words[:5])
 
 def extract_themes_and_classify(data: dict) -> List[Dict[str, List[Dict[str, str]]]]:
     """
@@ -148,8 +189,7 @@ def log_json_data(theme: str, opinion: str, classification: str):
     
     # Write JSON data as a log entry
     logging.info(json.dumps(log_entry))
-
-# Example input payload (the same as your input_data)
+    
 # Example input payload
 input_data = {
     "timestamp": "2024-11-24T13:21:23.022982",
