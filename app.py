@@ -15,6 +15,9 @@ app = Flask(__name__)
 log_directory = "log"
 os.makedirs(log_directory, exist_ok=True)
 
+print(os.path.exists('point-of-interest.json'))
+print(os.path.getsize('point-of-interest.json'))
+
 # Load point-of-interest themes from a JSON file
 with open('point-of-interest.json', 'r') as f:
     themes_of_interest = json.load(f)["themesOfInterest"]
