@@ -11,4 +11,11 @@ sudo apt install git-credential-manager-core
 git config --global credential.helper manager-core
 git config --global credential.helper cache
 
+# Example for PyTorch
+pip install torch torchvision torchaudio
 
+# Example for TensorFlow
+pip install tensorflow
+
+# Example for Flax (if required)
+pip install flax
