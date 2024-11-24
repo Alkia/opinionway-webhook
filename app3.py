@@ -133,6 +133,7 @@ def log_json_data(theme: str, opinion: str, classification: str):
     logging.info(json.dumps(log_entry))
 
 # Example input payload (the same as your input_data)
+# Example input payload
 input_data = {
     "timestamp": "2024-11-24T13:21:23.022982",
     "uid": "user8888?uid=JYow9cHgC2SdkqV3jINGNJ9RNDQ2",
@@ -153,16 +154,68 @@ input_data = {
                 "end": 83.76925299999999
             },
             {
-                "text": "risk of taking off. Moving on. Like many other exchanges, bybit has a due product will show you some eye popping APRs. Without knowing anything else, this already tells you That's because dual asset is crypto options trading by another name. Now options are complex and risky derivatives, and trading them is not exactly the most passive strategy out there either. But since Bridget put it on their passive income platform, That's explained. The API you see comes from other market participants on Vivid paying you a premium in exchange for the option to trade a future debt. This date is often only a few days into the future, meaning that the annualized returns you see can be misleading. Look. I'm gonna give it to you straight. Options trading is not If you want a relatively easy and stress free way to bring in passive income in the long term, then well, dual asset is not for you. Not financial advice, of course. Next up, the Christie Monmouth. Now this sounds cool, but it's worth pointing out that it's, well, just LP and by another name. These exchanges love to rebrand existing strategies, and I have to admit it, It sounds better than our previous. So Findit provides you with a really convenient interface to provide liquidity to an automated market maker You earn a yield at a cruise day, and it varies depending on trading volume. At the time of making this video, they're advertising at a 23% annualized USDT. So if I add $1,000 worth of This year for passive income I could expect about 200 bucks. Nice."
-                "speaker": "SPEAKER_0",
+                "text": "risk of taking off. Moving on. Like many other exchanges, bybit has a due product will show you some eye popping APRs. Without knowing anything else, this already tells you That's because dual asset is crypto options trading by another name. Now options are complex and risky derivatives, and trading them is not exactly the most passive strategy out there either. But since Bridget put it on their passive income platform, That's explained. The API you see comes from other market participants on Vivid paying you a premium in exchange for the option to trade a future debt. This date is often only a few days into the future, meaning that the annualized returns you see can be misleading. Look. I'm gonna give it to you straight. Options trading is not If you want a relatively easy and stress free way to bring in passive income in the long term, then well, dual asset is not for you. Not financial advice, of course. Next up, the Christie Monmouth. Now this sounds cool, but it's worth pointing out that it's, well, just LP and by another name. These exchanges love to rebrand existing strategies, and I have to admit it, It sounds better than our previous. So Findit provides you with a really convenient interface to provide liquidity to an automated market maker You earn a yield at a cruise day, and it varies depending on trading volume. At the time of making this video, they're advertising at a 23% annualized USDT. So if I add $1,000 worth of This would bring in around $1.92 a month. Although, the rate varies, so it could end up lower. If that doesn't get you excited, Bybit offers you the ability to leverage up to 10x. So that $1,000 becomes $10,000, and then we'd be looking at something like $19",
+                "speaker": "SPEAKER_1",
                 "speakerId": 1,
                 "is_user": False,
-                "start": 84,
-                "end": 163.76925299999999
+                "start": 37.5601905,
+                "end": 155.93019049999998
+            },
+            {
+                "text": "per month.",
+                "speaker": "SPEAKER_0",
+                "speakerId":1,
+                "is_user": True,
+                "start": 203.499253,
+                "end": 204.019253
+            },
+            {
+                "text": "Of",
+                "speaker": "SPEAKER_1",
+                "speakerId":1,
+                "is_user": False,
+                "start": 156.69019049999997,
+                "end": 157.1701905
+            },
+            {
+                "text": "course,",
+                "speaker": "SPEAKER_0",
+                "speakerId": 1,
+                "is_user": True,
+                "start": 204.73925300000002,
+                "end": 205.09925299999998
+            },
+            {
+                "text": "leverage, comes liquidation. In this case, if ETH drops 15%, as it so often loves to do, and Alright. I could keep going deeper into the passive income strategies available in crypto. There is some fascinating innovation going on in Fi, and the competition between centralized exchanges is forcing them to all up their game too. We've covered the basics and given you an idea of the risks involved because, unfortunately, there are always risks involved when you're putting your Pluto on the line to there's one thing you should always do. Google the compound annual growth rate of Bitcoin than buying and holding BTC. This isn't a gotcha moment, But numbers speak for themselves. Take a look at the risks and rewards of all the strategies available and make the right decision for you. Good luck. Okay. That's a wrap, folks. You got something out of this video, go ahead and drop us a like. Tell us about your passive income strategy in the comments, and make sure you're subscribed and have your bell notifications turned on so that you never miss another upload. As always, thank you for watching, and I'll see you next time. This is Guy",
+                "speaker": "SPEAKER_1",
+                "speakerId":1,
+                "is_user": False,
+                "start": 157.7701905,
+                "end": 289.079253
+            },
+            {
+                "text": "signing off.",
+                "speaker": "SPEAKER_0",
+                "speakerId":1,
+                "is_user": True,
+                "start": 242.64019050000002,
+                "end": 291.029253
             }
-        ]
+        ],
+        "photos": [],
+        "structured": {
+            "title": "Understanding Passive Income Strategies in Crypto",
+            "overview": "The conversation discusses various passive income strategies available in the cryptocurrency market, focusing on platforms like Bybit and exchanges offering products like lending, dual asset trading, and liquidity provision. The risks associated with these strategies, such as the potential for liquidation when leveraging and the misleading nature of annualized returns, are highlighted. The importance of understanding the risks and rewards of different strategies before making investment decisions is emphasized.",
+            "emoji": "💸",
+            "category": "finance",
+            "action_items": [],
+            "events": []
+        },
+        "apps_response": [],
+        "discarded": False
     }
 }
+
 
 # Run the extraction and classification function
 results = extract_themes_and_classify(input_data)
