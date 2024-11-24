@@ -116,7 +116,7 @@ input_data = {
             {
                 "text": "Of centralized exchanges too. This generally means a more accessible and smooth user experience. So if that's more your speed, then you head to the Conduero deals page, you can get trading fee discounts of up to ฿5,000. Lending, for example, is possible on most BEDs. On Vidbit, it's called Vidbit savings. Now bybit uses terms like state and unstake This is a bit misleading because this product does not delegate your crypto to a validator. Stake blockchain. It's just lending your crypto to other traders on FID in exchange for interest. You can go for a flexible loan term that allows you to withdraw your assets Or if you want a slightly higher yield, you can go for a fixed term loan, your crypto will be locked up and inaccessible. Duration. When lending on an exchange, aside from the fundamental risk of keeping your asset on an exchange, you're also relying on the liquidation engine not having any bad debts that can't be repaid.",
                 "speaker": "SPEAKER_0",
-                "speakerId": null,
+                "speakerId": 1,
                 "is_user": false,
                 "start": 0,
                 "end": 83.76925299999999
@@ -124,7 +124,7 @@ input_data = {
             {
                 "text": "risk of taking off. Moving on. Like many other exchanges, bybit has a due product will show you some eye popping APRs. Without knowing anything else, this already tells you That's because dual asset is crypto options trading by another name. Now options are complex and risky derivatives, and trading them is not exactly the most passive strategy out there either. But since Bridget put it on their passive income platform, That's explained. The API you see comes from other market participants on Vivid paying you a premium in exchange for the option to trade a future debt. This date is often only a few days into the future, meaning that the annualized returns you see can be misleading. Look. I'm gonna give it to you straight. Options trading is not If you want a relatively easy and stress free way to bring in passive income in the long term, then well, dual asset is not for you. Not financial advice, of course. Next up, the Christie Monmouth. Now this sounds cool, but it's worth pointing out that it's, well, just LP and by another name. These exchanges love to rebrand existing strategies, and I have to admit it, It sounds better than our previous. So Findit provides you with a really convenient interface to provide liquidity to an automated market maker You earn a yield at a cruise day, and it varies depending on trading volume. At the time of making this video, they're advertising at a 23% annualized USDT. So if I add $1,000 worth of This would bring in around $1.92 a month. Although, the rate varies, so it could end up lower. If that doesn't get you excited, Bybit offers you the ability to leverage up to 10x. So that $1,000 becomes $10,000, and then we'd be looking at something like $19",
                 "speaker": "SPEAKER_1",
-                "speakerId": null,
+                "speakerId": 1,
                 "is_user": false,
                 "start": 37.5601905,
                 "end": 155.93019049999998
@@ -132,7 +132,7 @@ input_data = {
             {
                 "text": "per month.",
                 "speaker": "SPEAKER_0",
-                "speakerId": null,
+                "speakerId":1,
                 "is_user": true,
                 "start": 203.499253,
                 "end": 204.019253
@@ -140,7 +140,7 @@ input_data = {
             {
                 "text": "Of",
                 "speaker": "SPEAKER_1",
-                "speakerId": null,
+                "speakerId":1,
                 "is_user": false,
                 "start": 156.69019049999997,
                 "end": 157.1701905
@@ -148,7 +148,7 @@ input_data = {
             {
                 "text": "course,",
                 "speaker": "SPEAKER_0",
-                "speakerId": null,
+                "speakerId": 1,
                 "is_user": true,
                 "start": 204.73925300000002,
                 "end": 205.09925299999998
@@ -156,7 +156,7 @@ input_data = {
             {
                 "text": "leverage, comes liquidation. In this case, if ETH drops 15%, as it so often loves to do, and Alright. I could keep going deeper into the passive income strategies available in crypto. There is some fascinating innovation going on in Fi, and the competition between centralized exchanges is forcing them to all up their game too. We've covered the basics and given you an idea of the risks involved because, unfortunately, there are always risks involved when you're putting your Pluto on the line to there's one thing you should always do. Google the compound annual growth rate of Bitcoin than buying and holding BTC. This isn't a gotcha moment, But numbers speak for themselves. Take a look at the risks and rewards of all the strategies available and make the right decision for you. Good luck. Okay. That's a wrap, folks. You got something out of this video, go ahead and drop us a like. Tell us about your passive income strategy in the comments, and make sure you're subscribed and have your bell notifications turned on so that you never miss another upload. As always, thank you for watching, and I'll see you next time. This is Guy",
                 "speaker": "SPEAKER_1",
-                "speakerId": null,
+                "speakerId":1,
                 "is_user": false,
                 "start": 157.7701905,
                 "end": 289.079253
@@ -164,7 +164,7 @@ input_data = {
             {
                 "text": "signing off.",
                 "speaker": "SPEAKER_0",
-                "speakerId": null,
+                "speakerId":1,
                 "is_user": true,
                 "start": 242.64019050000002,
                 "end": 291.029253
