@@ -36,3 +36,20 @@ curl -X POST http://localhost:8888/opinionway \
           "transcript": "This is a great product!",
           "uid": "12345"
         }'
+
+
+curl -X POST http://142.93.211.128:8888/opinionway \
+     -H "Content-Type: application/json" \
+     -d '{
+          "transcript": "This is a great product!",
+          "uid": "12345"
+        }'
+
+http://omi.a13z.org:8888/
+
+curl -X POST http://o.a13z.org:8888/opinionway?uid=user123 \
+     -H "Content-Type: application/json" \
+     -d '{
+          "transcript": "This is a great product!",
+          "uid": "12345"
+        }'
