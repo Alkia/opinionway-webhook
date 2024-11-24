@@ -45,6 +45,7 @@ def match_theme(transcript):
 
 # Define the endpoint to receive the webhook data
 @app.route('/opinionway', methods=['POST'])
+def opinionway():
     data = request.get_json()
     transcript = data.get('transcript', '')
     matched_theme, sentiment, score = match_theme(transcript)
