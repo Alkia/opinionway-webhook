@@ -9,6 +9,29 @@ nlp = spacy.load("en_core_web_sm")
 # Configure logging to write into ./log/app.log
 logging.basicConfig(filename='./log/app.log', level=logging.INFO, format='%(message)s')
 
+def clean_data(data: dict) -> dict:
+    """
+    Recursively clean the data by replacing 'null' with None.
+    
+    :param data: The original JSON dictionary to clean.
+    :return: A cleaned version of the dictionary with 'null' replaced by None.
+    """
+    # Check if data is a dictionary
+    if isinstance(data, dict):
+        return {key: clean_data(value) for key, value in data.items()}
+    
+    # Check if data is a list
+    elif isinstance(data, list):
+        return [clean_data(item) for item in data]
+    
+    # If data is 'null', replace it with None (this is done implicitly as there's no 'null' type in Python)
+    elif data is None:
+        return None
+    
+    # Otherwise, return the data as is
+    return data
+
+
 def extract_themes_and_classify(data: dict) -> List[Dict[str, List[Dict[str, str]]]]:
     """
     Extract themes, opinions, and classify them as Negative, Neutral, or Positive.
@@ -161,8 +184,12 @@ input_data = {
     }
 }
 
+
+# Clean the data
+cleaned_data = clean_data(input_data)
+
 # Run the function and display the results
-themes_and_opinions = extract_themes_and_classify(input_data)
+themes_and_opinions = extract_themes_and_classify(cleaned_data)
 
 # Print the results
 for entry in themes_and_opinions:
