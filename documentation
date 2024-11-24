@@ -25,3 +25,5 @@ pip install tensorflow-cpu
 
 pip install --upgrade transformers
 pip install --upgrade tensorflow
+
+pip install tf-keras
