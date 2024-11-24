@@ -75,7 +75,7 @@ def summarize_opinion_with_llm(opinion: str) -> str:
     # Placeholder for LLM summarization
     # For demonstration, we just take the first 5 words.
     words = opinion.split()
-    return " ".join(words[:5])
+    return " ".join(words[:3])
 
 def extract_themes_and_classify(data: dict) -> List[Dict[str, List[Dict[str, str]]]]:
     """
