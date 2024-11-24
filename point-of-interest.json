@@ -1,0 +1,49 @@
+// point-of-interest.json
+{
+    "themesOfInterest": [
+      {
+        "theme": "Political Debate",
+        "scenario": "Alice and Jessica are sipping coffee together at Starbucks.",
+        "omiSentiment": "Analyzes the strength and direction of each user’s opinion.",
+        "betOutcome": [
+          {
+            "description": "Why not betting on this",
+            "transactionLink": "https://polymarket.com/event/presidential-election-winner-2028?tid=1731799065934"
+          },
+          {
+            "description": "Learn more",
+            "transactionLink": [{ "method": "GET", "url": "https://www.perplexity.ai", "headers": { "Content-Type": "application/json" }, "data": { "query": "who will win the next 2028 race?" } }]
+          }
+        ]
+      },
+      {
+        "theme": "Sports Prediction",
+        "scenario": "Talking in a bar.",
+        "omiSentiment": "Collects and analyzes the sentiment of sports fans around the league.",
+        "betOutcome": [
+        ]
+      },
+      {
+        "theme": "Entertainment",
+        "scenario": "Discussion about movies.",
+        "omiSentiment": "Analyzes the tone of the movie discussion online.",
+        "betOutcome": [
+        ]
+      },
+      {
+        "theme": "Retail Brand - Loyalty Program and Customer Sentiment",
+        "scenario": "Discussion about Target's new service.",
+        "omiSentiment": "Omi tracks both User A’s optimism and User B’s cautious approach, analyzing broader customer sentiment towards Target’s new service through online reviews and social media reactions.",
+        "betOutcome": [
+          {
+            "description": "If the delivery service surpasses the customer base target or maintains high ratings, users who made accurate predictions receive random OmiCoins.",
+            "benefits": [
+              "redeemable for Target gift cards",
+              "free delivery on future orders",
+              "exclusive membership benefits in Target’s loyalty program"
+            ]
+          }
+        ]
+      }
+    ]
+  }
