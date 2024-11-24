@@ -8,6 +8,8 @@ from textblob import TextBlob
 import os
 import zipfile
 from datetime import datetime
+ 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 app = Flask(__name__)
 
@@ -23,7 +25,8 @@ with open('point-of-interest.json', 'r') as f:
     themes_of_interest = json.load(f)["themesOfInterest"]
 
 # Initialize sentiment analysis model (using HuggingFace)
-sentiment_analyzer = pipeline("sentiment-analysis")
+# Load the sentiment analysis pipeline with an explicit model
+sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
 # Set up logging
 log_filename = os.path.join(log_directory, "app.log")

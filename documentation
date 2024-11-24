@@ -19,3 +19,9 @@ pip install tensorflow
 
 # Example for Flax (if required)
 pip install flax
+
+pip uninstall tensorflow
+pip install tensorflow-cpu
+
+pip install --upgrade transformers
+pip install --upgrade tensorflow
