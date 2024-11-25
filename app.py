@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from transformers import pipeline
+from transformers import pipeline # for sentiment analysis
 import os
 import zipfile
 from datetime import datetime
@@ -19,7 +19,7 @@ os.makedirs(log_directory, exist_ok=True)
 with open('point-of-interest.json', 'r') as f:
     themes_of_interest = json.load(f)["themesOfInterest"]
 
-# Initialize sentiment analysis model (using HuggingFace)
+# Initialize sentiment analysis model (using HuggingFace) from transformers import pipeline
 sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
 
 # Set up logging
