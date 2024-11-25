@@ -80,13 +80,14 @@ def summarize_theme(theme_description: str, max_words: int = 5) -> str:
     """
     words = theme_description.split()
     return " ".join(words[:max_words])
+    
 
 def summarize_opinion_with_llm(opinion: str) -> str:
     """
     Summarizes the opinion using LSA (Latent Semantic Analysis) algorithm.
     
     :param opinion: The full opinion to be summarized.
-    :return: A clever, accurate summary of the opinion in about 5 words.
+    :return: A clever, accurate summary of the opinion in one line.
     """
     if not opinion.strip():
         return ""
@@ -104,7 +105,9 @@ def summarize_opinion_with_llm(opinion: str) -> str:
         summary = summarizer(parser.document, sentences_count=1)
         
         if not summary:
-            return " ".join(opinion.split()[:5])
+            print("No summary found, falling back to basic summarization")
+            return " ".join(opinion.split()[:15])
+        
             
         # Convert summary to string and get first 5 words
         summary_text = str(summary[0])
