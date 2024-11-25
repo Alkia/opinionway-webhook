@@ -11,6 +11,9 @@ from sumy.nlp.stemmers import Stemmer
 from sumy.utils import get_stop_words
 import nltk
 
+# Force NLTK to use the data directory in your virtual environment
+nltk.data.path.append('/var/opinionway-webhook/venv/nltk_data')
+
 # Initialize SpaCy model for text processing
 nlp = spacy.load("en_core_web_sm")
 
