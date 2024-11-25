@@ -28,6 +28,8 @@ pip install --upgrade tensorflow
 
 pip install tf-keras
 
+ pip install gensim
+
 # To test the /opinionway endpoint of your Flask app automatically, you can create a test script (test.py) and also use a curl command for manual testing. Here's how to implement both:
 # curl Command for Manual Testing
 curl -X POST http://localhost:8888/opinionway \

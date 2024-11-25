@@ -80,29 +80,6 @@ def extract_main_clause(text: str) -> str:
     return " ".join(summary.split()[:12])
 
 #########################################################################3333
-def summarize_opinion_with_gensim(opinion: str, word_count: int = 12) -> str:
-    """
-    Create a concise summary of the opinion, approximately the size of a heading.
-    Default word count is set to 12 for a heading-like length.
-    """
-    if not opinion.strip():
-        return ""
-    
-    try:
-        # Summarize the text with a word count suitable for a heading
-        summary = summarize(opinion, word_count=word_count)
-        
-        # If summarization fails or returns an empty result
-        if not summary.strip():
-            return extract_main_clause(opinion)
-        
-        return extract_main_clause(summary)
-    
-    except Exception as e:
-        logging.error(f"Summarization failed: {str(e)}")
-        return extract_main_clause(opinion)
-    
-#########################################################################3333
 def summarize_opinion_with_llm(opinion: str) -> str:
     """Create a clear, single-sentence summary of the opinion."""
     if not opinion.strip():
@@ -215,8 +192,7 @@ def extract_themes_and_classify(data: Dict[str, any]) -> List[Dict[str, str]]:
             if keyword_match and context_match:
                 opinion = text.strip()
                 summarized_theme = summarize_theme(theme["theme"])
-                summarized_opinion = summarize_opinion_with_gensim(opinion)
-                summarized_opinion_B = summarize_opinion_with_llm(opinion)
+                summarized_opinion = summarize_opinion_with_llm(opinion)
                 classification = classify_opinion(opinion)
                 
                 if len(summarized_opinion.split()) >= 3:
