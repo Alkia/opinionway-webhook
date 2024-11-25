@@ -9,7 +9,6 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.nlp.stemmers import Stemmer
 from sumy.utils import get_stop_words
-from gensim.summarization import summarize
 import nltk
 
 # Force NLTK to use the data directory in your virtual environment
