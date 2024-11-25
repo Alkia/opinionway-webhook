@@ -94,3 +94,21 @@ curl -X POST http://o.a13z.org:8888/opinionway?uid=user123 \
            ],
            "discarded": false
          }'
+
+
+python
+import nltk
+nltk.download('punkt')
+exit()
+
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
+text = "This is a test sentence."
+print(word_tokenize(text))
+
+import nltk
+nltk.data.path.append('/root/nltk_data/tokenizers/punkt')
+from nltk.tokenize import word_tokenize
+text = "This is a test sentence."
+print(word_tokenize(text))
