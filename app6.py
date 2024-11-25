@@ -170,7 +170,7 @@ def extract_themes_and_classify(data: Dict[str, any]) -> List[Dict[str, str]]:
 
     results = []
     transcript_segments = data.get("payload", {}).get("transcript_segments", [])
-
+ 
     for segment in transcript_segments:
         text = segment.get("text", "")
         normalized_text = normalize_text(text)
