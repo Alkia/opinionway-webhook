@@ -2,16 +2,7 @@ import json
 import logging
 import string
 from typing import List, Dict
-
-import nltk
-from gensim.summarization import summarize
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-
-from sumy.summarizers.lsa import LsaSummarizer
-from sumy.nlp.stemmers import Stemmer
-from stop_words import get_stop_words
-
+ 
 # Configure logging
 logging.basicConfig(
     filename='./log/app.log',
