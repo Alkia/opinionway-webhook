@@ -116,7 +116,7 @@ def summarize_opinion_with_llm(opinion: str) -> str:
         summary_text = str(summary[0])
         words = summary_text.split()
         
-        return " ".join(words[:5])
+        return " ".join(words[:15])
         
     except Exception as e:
         logging.error(f"Summarization failed: {str(e)}")
