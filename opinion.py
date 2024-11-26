@@ -2,14 +2,18 @@ import asyncio
 import json
 import logging
 import os
+import sys
 import zipfile
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
+# Ensure the current directory is in Python path
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 import uvicorn
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 import torch
 from transformers import pipeline
 
@@ -18,7 +22,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('app.log'),
+        logging.FileHandler('opinion.log'),
         logging.StreamHandler()
     ]
 )
@@ -33,6 +37,8 @@ if not torch.cuda.is_available():
 
 # Pydantic Models for Request Validation
 class TranscriptSegment(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
     text: str = Field(default="", description="Transcript segment text")
     speaker: str = Field(default="Unknown", description="Speaker identifier")
     speakerId: Optional[int] = None
@@ -41,12 +47,16 @@ class TranscriptSegment(BaseModel):
     end: Optional[float] = None
 
 class StructuredData(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
     title: Optional[str] = None
     overview: Optional[str] = None
     category: Optional[str] = None
     emoji: Optional[str] = None
 
 class OpinionRequest(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
     id: Optional[str] = None
     created_at: Optional[str] = None
     started_at: Optional[str] = None
@@ -55,10 +65,14 @@ class OpinionRequest(BaseModel):
     structured: Optional[StructuredData] = None
 
 class SentimentResult(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
     label: str
     score: float
 
 class SegmentAnalysis(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
     text: str
     sentiment: SentimentResult
     summary: str
@@ -76,6 +90,9 @@ class MLModels:
 
     def init_models(self):
         try:
+            # Check if models can be loaded without GPU
+            torch.cuda.set_device(-1)
+            
             self.sentiment_analyzer = pipeline(
                 "sentiment-analysis", 
                 model="distilbert-base-uncased-finetuned-sst-2-english"
@@ -114,11 +131,15 @@ class MLModels:
             return text[:100]
 
 # Initialize FastAPI App
-app = FastAPI(
-    title="Opinion Analysis API",
-    description="Real-time transcript analysis with sentiment and summary",
-    version="1.0.0"
-)
+def create_app():
+    app = FastAPI(
+        title="Opinion Analysis API",
+        description="Real-time transcript analysis with sentiment and summary",
+        version="1.0.0"
+    )
+    return app
+
+app = create_app()
 
 # Global ML Models
 ml_models = MLModels()
@@ -184,9 +205,9 @@ async def process_opinion(
             "request_id": request.id,
             "total_segments": len(segment_analyses),
             "opinions": [
-                analysis.dict() for analysis in segment_analyses
+                analysis.model_dump() for analysis in segment_analyses
             ],
-            "structured_data": request.structured.dict() if request.structured else {}
+            "structured_data": request.structured.model_dump() if request.structured else {}
         }
 
     except Exception as e:
@@ -241,10 +262,20 @@ async def health_check():
     """
     return {"status": "healthy"}
 
+def main():
+    """
+    Main entry point for the application
+    """
+    try:
+        uvicorn.run(
+            "opinion:app", 
+            host="0.0.0.0", 
+            port=8888, 
+            reload=True
+        )
+    except Exception as e:
+        logger.error(f"Failed to start server: {e}")
+        sys.exit(1)
+
 if __name__ == "__main__":
-    uvicorn.run(
-        "app:app", 
-        host="0.0.0.0", 
-        port=8888, 
-        reload=True
-    )
+    main()
