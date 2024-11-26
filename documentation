@@ -1,7 +1,8 @@
 export TMPDIR=/var/tmp
 mkdir -p /var/tmp/pip-temp
 export TMPDIR=/var/tmp/pip-temp
-pip install torch
+
+pip install torch transformers fastapi uvicorn
 
 curl -X POST http://o.a13z.org:8888/opinionway?uid=user123 \
      -H "Content-Type: application/json" \

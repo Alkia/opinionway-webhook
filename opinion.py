@@ -1,20 +1,19 @@
 import asyncio
+import dataclasses
 import json
 import logging
 import os
 import sys
-import zipfile
+import traceback
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-# Ensure the current directory is in Python path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
+# Third-party imports
+import torch
 import uvicorn
 from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, ConfigDict
-import torch
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field, ConfigDict, validator
 from transformers import pipeline
 
 # Configure logging
@@ -22,259 +21,216 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('opinion.log'),
-        logging.StreamHandler()
+        logging.FileHandler('transcript_analysis.log', encoding='utf-8'),
+        logging.StreamHandler(sys.stdout)
     ]
 )
 logger = logging.getLogger(__name__)
 
-# Create necessary directories
-os.makedirs('logs', exist_ok=True)
+@dataclasses.dataclass
+class AnalysisConfig:
+    """Configuration for transcript analysis"""
+    max_segment_length: int = 512
+    sentiment_model: str = "distilbert-base-uncased-finetuned-sst-2-english"
+    summarization_model: str = "facebook/bart-large-cnn"
+    device: str = "cpu"
 
-# Disable CUDA if not available
-if not torch.cuda.is_available():
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-# Pydantic Models for Request Validation
 class TranscriptSegment(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    
-    text: str = Field(default="", description="Transcript segment text")
-    speaker: str = Field(default="Unknown", description="Speaker identifier")
-    speakerId: Optional[int] = None
-    is_user: bool = False
-    start: Optional[float] = None
-    end: Optional[float] = None
+    """Represents a single segment of a transcript"""
+    text: str = Field(min_length=3, max_length=1024)
+    speaker: str = "Unknown"
+    timestamp: Optional[float] = None
+    metadata: Dict[str, Any] = {}
 
-class StructuredData(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    
-    title: Optional[str] = None
-    overview: Optional[str] = None
-    category: Optional[str] = None
-    emoji: Optional[str] = None
-
-class OpinionRequest(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    
-    id: Optional[str] = None
-    created_at: Optional[str] = None
-    started_at: Optional[str] = None
-    finished_at: Optional[str] = None
-    transcript_segments: List[TranscriptSegment] = []
-    structured: Optional[StructuredData] = None
+    @validator('text')
+    def clean_text(cls, v):
+        """Sanitize and validate text input"""
+        return v.strip()
 
 class SentimentResult(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    
+    """Sentiment analysis result"""
     label: str
-    score: float
+    confidence: float
 
 class SegmentAnalysis(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-    
-    text: str
+    """Comprehensive analysis of a transcript segment"""
+    original_text: str
     sentiment: SentimentResult
     summary: str
-    metadata: Dict[str, Any]
+    keywords: List[str]
+    language: str
 
-# Initialize ML Pipelines
-class MLModels:
+class TranscriptAnalyzer:
+    """Core ML-powered transcript analysis engine"""
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls, config: AnalysisConfig = AnalysisConfig()):
         if not cls._instance:
             cls._instance = super().__new__(cls)
-            cls._instance.init_models()
+            cls._instance._initialize(config)
         return cls._instance
 
-    def init_models(self):
+    def _initialize(self, config: AnalysisConfig):
+        """Initialize ML pipelines with robust error handling"""
         try:
-            # Check if models can be loaded without GPU
+            # Ensure CPU usage
             torch.cuda.set_device(-1)
-            
-            self.sentiment_analyzer = pipeline(
+
+            self.config = config
+            self.sentiment_pipeline = pipeline(
                 "sentiment-analysis", 
-                model="distilbert-base-uncased-finetuned-sst-2-english"
+                model=config.sentiment_model,
+                device=-1  # Force CPU
             )
-            self.summarizer = pipeline(
+            self.summarization_pipeline = pipeline(
                 "summarization", 
-                model="facebook/bart-large-cnn"
+                model=config.summarization_model, 
+                device=-1  # Force CPU
             )
-            logger.info("ML models initialized successfully")
+            self.keyword_extractor = pipeline(
+                "token-classification", 
+                model="dslim/bert-base-NER"
+            )
+
+            logger.info("ML pipelines initialized successfully")
         except Exception as e:
-            logger.error(f"Model initialization error: {e}")
+            logger.error(f"ML pipeline initialization failed: {e}")
+            raise RuntimeError(f"Could not load ML models: {e}")
+
+    async def analyze_segment(self, segment: TranscriptSegment) -> SegmentAnalysis:
+        """
+        Comprehensive async analysis of a transcript segment
+        
+        Args:
+            segment (TranscriptSegment): Input transcript segment
+        
+        Returns:
+            SegmentAnalysis: Detailed analysis result
+        """
+        try:
+            # Sentiment Analysis
+            sentiment_result = self._analyze_sentiment(segment.text)
+            
+            # Summarization
+            summary = self._generate_summary(segment.text)
+            
+            # Keyword Extraction
+            keywords = self._extract_keywords(segment.text)
+
+            return SegmentAnalysis(
+                original_text=segment.text,
+                sentiment=sentiment_result,
+                summary=summary,
+                keywords=keywords,
+                language='en'  # Default to English
+            )
+        except Exception as e:
+            logger.error(f"Segment analysis error: {e}")
             raise
 
-    def analyze_sentiment(self, text: str) -> SentimentResult:
+    def _analyze_sentiment(self, text: str) -> SentimentResult:
+        """Internal sentiment analysis method"""
         try:
-            result = self.sentiment_analyzer(text)[0]
+            result = self.sentiment_pipeline(text[:512])[0]
             return SentimentResult(
                 label=result['label'], 
-                score=result['score']
+                confidence=result['score']
             )
         except Exception as e:
-            logger.error(f"Sentiment analysis error: {e}")
-            return SentimentResult(label="NEUTRAL", score=0.5)
+            logger.warning(f"Sentiment analysis fallback: {e}")
+            return SentimentResult(label="NEUTRAL", confidence=0.5)
 
-    def summarize_text(self, text: str, max_length: int = 50) -> str:
+    def _generate_summary(self, text: str, max_length: int = 100) -> str:
+        """Generate concise text summary"""
         try:
-            summary = self.summarizer(
-                text, 
+            summary = self.summarization_pipeline(
+                text[:1024], 
                 max_length=max_length, 
-                min_length=20, 
+                min_length=30, 
                 do_sample=False
             )
-            return summary[0]['summary_text'] if summary else text[:100]
+            return summary[0]['summary_text'] if summary else text[:max_length]
         except Exception as e:
-            logger.error(f"Summarization error: {e}")
-            return text[:100]
+            logger.warning(f"Summary generation fallback: {e}")
+            return text[:max_length]
 
-# Initialize FastAPI App
-def create_app():
-    app = FastAPI(
-        title="Opinion Analysis API",
-        description="Real-time transcript analysis with sentiment and summary",
-        version="1.0.0"
-    )
-    return app
+    def _extract_keywords(self, text: str, top_k: int = 5) -> List[str]:
+        """Extract significant keywords/entities"""
+        try:
+            ner_results = self.keyword_extractor(text[:512])
+            keywords = [
+                entity['word'] for entity in ner_results 
+                if entity['score'] > 0.7
+            ]
+            return list(set(keywords))[:top_k]
+        except Exception as e:
+            logger.warning(f"Keyword extraction fallback: {e}")
+            return []
 
-app = create_app()
+class TranscriptAnalysisApp:
+    """FastAPI Application for Transcript Analysis"""
+    def __init__(self, analyzer: TranscriptAnalyzer):
+        self.app = FastAPI(
+            title="Intelligent Transcript Analyzer",
+            description="Advanced ML-powered transcript processing",
+            version="1.0.0"
+        )
+        self.analyzer = analyzer
+        self._configure_middleware()
+        self._setup_routes()
 
-# Global ML Models
-ml_models = MLModels()
-
-async def process_transcript_segment(segment: TranscriptSegment) -> SegmentAnalysis:
-    """
-    Asynchronously process a single transcript segment
-    """
-    # Remove empty or very short segments
-    if not segment.text or len(segment.text.strip()) < 3:
-        raise ValueError("Segment text is too short")
-
-    # Analyze sentiment
-    sentiment = ml_models.analyze_sentiment(segment.text)
-    
-    # Generate summary
-    summary = ml_models.summarize_text(segment.text)
-
-    # Create detailed segment analysis
-    return SegmentAnalysis(
-        text=segment.text,
-        sentiment=sentiment,
-        summary=summary,
-        metadata={
-            "speaker": segment.speaker,
-            "is_user": segment.is_user,
-            "start_time": segment.start,
-            "end_time": segment.end
-        }
-    )
-
-@app.post("/opinionway", response_model=Dict[str, Any])
-async def process_opinion(
-    request: OpinionRequest, 
-    background_tasks: BackgroundTasks
-):
-    """
-    Process incoming opinion data with async segment analysis
-    """
-    try:
-        # Validate input
-        if not request.transcript_segments:
-            raise HTTPException(
-                status_code=400, 
-                detail="No transcript segments provided"
-            )
-
-        # Process segments concurrently
-        segment_analyses = await asyncio.gather(
-            *[process_transcript_segment(segment) 
-              for segment in request.transcript_segments]
+    def _configure_middleware(self):
+        """Configure application middleware"""
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
 
-        # Log processing details
-        background_tasks.add_task(
-            log_request, 
-            request_id=request.id, 
-            total_segments=len(segment_analyses)
-        )
+    def _setup_routes(self):
+        """Define API routes"""
+        @self.app.post("/analyze")
+        async def analyze_transcript(
+            request: Request, 
+            background_tasks: BackgroundTasks
+        ):
+            try:
+                payload = await request.json()
+                segments = [TranscriptSegment(**seg) for seg in payload.get('segments', [])]
+                
+                if not segments:
+                    raise HTTPException(status_code=400, detail="No transcript segments provided")
 
-        # Prepare response
-        return {
-            "request_id": request.id,
-            "total_segments": len(segment_analyses),
-            "opinions": [
-                analysis.model_dump() for analysis in segment_analyses
-            ],
-            "structured_data": request.structured.model_dump() if request.structured else {}
-        }
+                # Concurrent segment analysis
+                analyses = await asyncio.gather(
+                    *[self.analyzer.analyze_segment(segment) for segment in segments]
+                )
 
-    except Exception as e:
-        logger.error(f"Error processing opinion: {e}")
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Internal processing error: {str(e)}"
-        )
+                return {
+                    "total_segments": len(analyses),
+                    "results": [analysis.dict() for analysis in analyses]
+                }
 
-async def log_request(request_id: str, total_segments: int):
-    """
-    Background logging task
-    """
-    try:
-        log_entry = {
-            "timestamp": datetime.now().isoformat(),
-            "request_id": request_id,
-            "total_segments": total_segments
-        }
-        
-        # Log to file
-        with open('logs/request_log.json', 'a') as f:
-            f.write(json.dumps(log_entry) + '\n')
-        
-        # Rotate logs if necessary
-        rotate_logs()
-    except Exception as e:
-        logger.error(f"Logging error: {e}")
-
-def rotate_logs(max_log_files: int = 7):
-    """
-    Rotate log files, keeping only the most recent entries
-    """
-    try:
-        log_files = sorted(
-            [f for f in os.listdir('logs') 
-             if f.endswith('.json') and f.startswith('request_log')]
-        )
-
-        if len(log_files) > max_log_files:
-            oldest_log = os.path.join('logs', log_files[0])
-            with zipfile.ZipFile(f"{oldest_log}.zip", 'w') as zipf:
-                zipf.write(oldest_log, arcname=log_files[0])
-            os.remove(oldest_log)
-    except Exception as e:
-        logger.error(f"Log rotation error: {e}")
-
-@app.get("/health")
-async def health_check():
-    """
-    Simple health check endpoint
-    """
-    return {"status": "healthy"}
+            except Exception as e:
+                logger.error(f"Analysis request error: {traceback.format_exc()}")
+                raise HTTPException(status_code=500, detail=str(e))
 
 def main():
-    """
-    Main entry point for the application
-    """
+    """Application entry point"""
     try:
+        config = AnalysisConfig()
+        analyzer = TranscriptAnalyzer(config)
+        app_wrapper = TranscriptAnalysisApp(analyzer)
+        
         uvicorn.run(
-            "opinion:app", 
+            app_wrapper.app, 
             host="0.0.0.0", 
-            port=8888, 
-            reload=True
+            port=8000
         )
     except Exception as e:
-        logger.error(f"Failed to start server: {e}")
+        logger.critical(f"Application startup failed: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
